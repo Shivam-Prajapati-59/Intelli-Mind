@@ -169,7 +169,7 @@ export default function CodingInterviewClient({ interviewDetails }: Props) {
             </Button>
 
             <Link
-              href={`/dashboard/coding-interview/${interviewDetails.interviewId}/start`}
+              href={`/dashboard/codingInterview/${interviewDetails.interviewId}/codeditor`}
             >
               <Button
                 className="w-full max-w-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm md:text-base"

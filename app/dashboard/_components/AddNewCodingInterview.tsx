@@ -91,10 +91,33 @@ const AddNewCodingInterview = () => {
     setIsLoading(true);
 
     try {
+      // Call the generate-questions API
+      const formDataApi = new FormData();
+      formDataApi.append("topic", formData.interviewTopic);
+
+      const response = await fetch("/api/coding-questions", {
+        method: "POST",
+        body: formDataApi,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate questions");
+      }
+
+      const generatedQuestions = await response.json();
+      const cleanJsonQuestion = generatedQuestions
+        .replace(/```json\n?/g, "")
+        .replace(/```/g, "")
+        .trim();
+
+      const cleanJsonOutput = JSON.parse(cleanJsonQuestion);
+
+      // Insert the interview data into the database
       const result = await db
         .insert(CodingInterview)
         .values({
           interviewId: uuidv4(),
+          jsonCodeResp: JSON.stringify(cleanJsonOutput), // Store the generated questions
           interviewTopic: formData.interviewTopic.trim(),
           difficultyLevel: formData.difficultyLevel,
           problemDescription: formData.problemDescription.trim(),

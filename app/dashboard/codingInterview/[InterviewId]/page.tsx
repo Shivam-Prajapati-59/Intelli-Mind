@@ -22,8 +22,6 @@ async function getInterviewDetails(interviewId: string | undefined) {
       .from(CodingInterview)
       .where(eq(CodingInterview.interviewId, interviewId));
 
-    // console.log("Query result:", result);
-
     return result[0] || null;
   } catch (error) {
     console.error("Error fetching interview details:", error);
@@ -32,7 +30,6 @@ async function getInterviewDetails(interviewId: string | undefined) {
 }
 
 export default async function InterviewPage({ params }: Props) {
-  // console.log("Received params:", params);
   const resolvedParams = params instanceof Promise ? await params : params;
 
   if (!resolvedParams || !resolvedParams.InterviewId) {
@@ -45,7 +42,6 @@ export default async function InterviewPage({ params }: Props) {
   }
 
   const { InterviewId } = resolvedParams;
-  // console.log("Coding Interview page loaded for ID:", InterviewId);
 
   const interviewDetails = await getInterviewDetails(InterviewId);
 
