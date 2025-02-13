@@ -49,9 +49,9 @@ interface FeedbackResponse {
     bestPractices: string;
   };
 }
-interface Props {
+type Props = {
   params: { InterviewId: string };
-}
+};
 
 export default function CodingInterviewPage({ params }: Props) {
   const interviewId = params.InterviewId;
