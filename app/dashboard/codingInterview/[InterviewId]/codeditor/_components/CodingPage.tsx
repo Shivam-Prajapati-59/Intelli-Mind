@@ -50,11 +50,11 @@ interface FeedbackResponse {
   };
 }
 type Props = {
-  params: { interviewId: string }; // Ensure it's a resolved object
+  id: { interviewId: string }; // Ensure it's a resolved object
 };
 
-export default function CodingInterviewPage({ params }: Props) {
-  const { interviewId } = params;
+export default function CodingInterviewPage({ id }: Props) {
+  const { interviewId } = id;
 
   // State management
   const [language, setLanguage] = useState<"java" | "cpp">("java");
