@@ -370,12 +370,6 @@ export default function CodingInterviewPage({ params }: Props) {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       <div className="w-2/5 p-6 bg-white shadow-lg overflow-y-auto border-r border-gray-200">
-        <div className="mt-4">
-          <InterviewTimer
-            duration={interviewDuration}
-            onTimeUp={handleInterviewEnd}
-          />
-        </div>
         <CodingQuestion
           question={codingInterviewQuestions[activeQuestionIndex]}
         />

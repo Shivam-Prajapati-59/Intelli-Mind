@@ -3,13 +3,12 @@ import CodingInterviewPage from "./_components/CodingPage";
 
 type Props = {
   params: Promise<{
-    InterviewId: string; // Note the capital 'I' to match your route
+    InterviewId: string;
   }>;
 };
 
 export default async function InterviewPage({ params }: Props) {
-  const resolvedParams = await params;
-  const { InterviewId } = resolvedParams;
+  const { InterviewId } = await params;
 
   return (
     <div className="w-full h-full">
