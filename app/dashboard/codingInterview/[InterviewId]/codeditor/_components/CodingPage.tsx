@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, use } from "react";
 import {
   Select,
   SelectContent,
@@ -49,13 +49,13 @@ interface FeedbackResponse {
     bestPractices: string;
   };
 }
-type Props = {
-  id: { interviewId: string }; // Ensure it's a resolved object
+type CodingInterviewPageProps = {
+  interviewId: string;
 };
 
-export default function CodingInterviewPage({ id }: Props) {
-  const { interviewId } = id;
-
+export default function CodingInterviewPage({
+  interviewId,
+}: CodingInterviewPageProps) {
   // State management
   const [language, setLanguage] = useState<"java" | "cpp">("java");
   const [code, setCode] = useState(getInitialCode("java"));
