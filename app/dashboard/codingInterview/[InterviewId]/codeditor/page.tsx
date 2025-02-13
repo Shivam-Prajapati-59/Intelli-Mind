@@ -8,12 +8,11 @@ type Props = {
 };
 
 export default async function InterviewPage({ params }: Props) {
-  const resolvedParams = await params;
-  const { InterviewId } = resolvedParams;
+  const { InterviewId } = await params;
 
   return (
     <div className="w-full h-full">
-      <CodingInterviewPage params={{ InterviewId }} />
+      <CodingInterviewPage params={InterviewId} />
     </div>
   );
 }
