@@ -50,11 +50,11 @@ interface FeedbackResponse {
   };
 }
 type Props = {
-  params: { InterviewId: string };
+  params: string;
 };
 
 export default function CodingInterviewPage({ params }: Props) {
-  const interviewId = params.InterviewId;
+  const interviewId = params;
 
   // State management
   const [language, setLanguage] = useState<"java" | "cpp">("java");
