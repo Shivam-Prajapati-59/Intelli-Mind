@@ -8,7 +8,7 @@ interface InterviewPageProps {
 export default async function InterviewPage({ params }: InterviewPageProps) {
   // Note the capital "I" to match the route parameter name
   const { InterviewId } = await params;
-  console.log("InterviewId", InterviewId);
+  // console.log("InterviewId", InterviewId);
 
   return (
     <div className="w-full h-full">
