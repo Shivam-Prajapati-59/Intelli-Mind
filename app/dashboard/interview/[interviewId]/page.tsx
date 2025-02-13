@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import InterviewClient from "./InterviewClient";
 
 type Props = {
-  params: { interviewId: string };
+  params: Promise<{ interviewId: string }>;
 };
 
 async function getInterviewDetails(interviewId: string) {
@@ -20,7 +20,8 @@ async function getInterviewDetails(interviewId: string) {
   }
 }
 
-export default async function InterviewPage({ params }: Props) {
+export default async function InterviewPage(props: Props) {
+  const params = await props.params;
   const { interviewId } = params;
   console.log("Interview page loaded", interviewId);
 

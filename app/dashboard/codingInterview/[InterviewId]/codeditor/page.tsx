@@ -1,14 +1,16 @@
 import React from "react";
 import CodingInterviewPage from "./_components/CodingPage";
 
-interface InterviewPageProps {
-  params: { InterviewId: string };
+type InterviewParams = {
+  InterviewId: string;
+};
+
+interface PageProps {
+  params: Promise<InterviewParams>;
 }
 
-export default async function InterviewPage({ params }: InterviewPageProps) {
-  // Note the capital "I" to match the route parameter name
-  const { InterviewId } = await params;
-  // console.log("InterviewId", InterviewId);
+export default async function CodeEditorPage({ params }: PageProps) {
+  const InterviewId = (await params).InterviewId;
 
   return (
     <div className="w-full h-full">

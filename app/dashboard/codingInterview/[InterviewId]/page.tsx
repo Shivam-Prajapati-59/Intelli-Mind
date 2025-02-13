@@ -5,7 +5,7 @@ import InterviewClient from "./CodingInterviewClient";
 import CodingInterviewClient from "./CodingInterviewClient";
 
 type Props = {
-  params: { InterviewId: string };
+  params: Promise<{ InterviewId: string }>;
 };
 
 async function getInterviewDetails(interviewId: string | undefined) {
@@ -29,7 +29,8 @@ async function getInterviewDetails(interviewId: string | undefined) {
   }
 }
 
-export default async function InterviewPage({ params }: Props) {
+export default async function InterviewPage(props: Props) {
+  const params = await props.params;
   const resolvedParams = params instanceof Promise ? await params : params;
 
   if (!resolvedParams || !resolvedParams.InterviewId) {
