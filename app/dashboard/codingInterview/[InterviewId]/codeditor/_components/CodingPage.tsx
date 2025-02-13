@@ -50,9 +50,7 @@ interface FeedbackResponse {
   };
 }
 interface Props {
-  params: {
-    InterviewId: string;
-  };
+  params: { InterviewId: string };
 }
 
 export default function CodingInterviewPage({ params }: Props) {
