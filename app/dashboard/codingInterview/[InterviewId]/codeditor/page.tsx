@@ -1,14 +1,10 @@
 import React from "react";
 import CodingInterviewPage from "./_components/CodingPage";
+import { PageProps } from "@/.next/types/app/dashboard/codingInterview/[InterviewId]/page";
+// import { PageProps } from "next"; // Importing PageProps for type safety
 
-type Props = {
-  params: Promise<{ InterviewId: string }>; // Notice the uppercase "I"
-};
-
-export default async function InterviewPage({ params }: Props) {
-  const resolvedParams = await params; // Await the params
-
-  console.log("Resolved Params:", resolvedParams); // Debugging
+export default async function InterviewPage({ params }: PageProps) {
+  const resolvedParams = await params; // Await the promise
 
   return (
     <div className="w-full h-full">
