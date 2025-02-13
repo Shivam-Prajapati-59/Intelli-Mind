@@ -2,7 +2,7 @@ import React from "react";
 import CodingInterviewPage from "./_components/CodingPage";
 
 interface InterviewPageProps {
-  params: Promise<{ InterviewId: string }>;
+  params: { InterviewId: string };
 }
 
 export default async function InterviewPage({ params }: InterviewPageProps) {
