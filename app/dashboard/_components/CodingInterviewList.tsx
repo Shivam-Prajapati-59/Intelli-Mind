@@ -78,11 +78,11 @@ const CodingInterviewList = () => {
   };
 
   const handleStartInterview = (interviewId: string) => {
-    router.push(`/dashboard/coding-interview/${interviewId}`);
+    router.push(`/dashboard/codingInterview/${interviewId}`);
   };
 
   const handleViewSolution = (interviewId: string) => {
-    router.push(`/dashboard/coding-interview/${interviewId}/solution`);
+    router.push(`/dashboard/codingInterview/${interviewId}/coding-feedback`);
   };
 
   const getDifficultyColor = (difficulty: string) => {

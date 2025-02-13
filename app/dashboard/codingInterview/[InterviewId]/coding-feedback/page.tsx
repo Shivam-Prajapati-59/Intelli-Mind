@@ -289,7 +289,6 @@ const InterviewFeedbackPage = ({ params }: Props) => {
           {userAnswers.map((answer, index) => {
             const parsedQuestion = JSON.parse(answer.question);
             const parsedFeedback = JSON.parse(answer.feedback);
-
             return (
               <Card key={index}>
                 <CardHeader>

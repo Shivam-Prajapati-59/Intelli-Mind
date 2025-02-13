@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
-import { Menu } from "lucide-react";
+import { Cpu, Menu } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -28,7 +28,6 @@ const Header = () => {
   const navItems = [
     { href: "/", label: "Dashboard" },
     { href: "/questions", label: "Questions" },
-    { href: "/pricing", label: "Pricing" },
   ];
 
   return (
@@ -36,8 +35,11 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold">
-              Logo
+            <Link
+              href="/"
+              className=" flex items-center justify-center text-2xl font-bold gap-1"
+            >
+              <Cpu /> IntelliMind
             </Link>
           </div>
 

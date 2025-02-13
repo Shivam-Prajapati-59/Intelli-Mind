@@ -11,15 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Play,
-  FileCode,
-  Settings2,
-  Undo2,
-  Redo2,
-  Camera,
-  MessageSquare,
-} from "lucide-react";
+import { Play, FileCode, Settings2, Undo2, Redo2, Camera } from "lucide-react";
 import { undo, redo } from "@codemirror/commands";
 import type { EditorView } from "@codemirror/view";
 import { db } from "@/utils/db";
@@ -30,8 +22,8 @@ import CodeEditor from "./CodeEditor";
 import CodingQuestion from "./CodingQuestion";
 import FloatingWebcam from "./FloatingWebacm";
 import Link from "next/link";
-import { User } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
+import InterviewTimer from "./InterviewTimer";
 
 type CodingInterviewQuestion = {
   title: string;
@@ -89,6 +81,8 @@ export default function CodingInterviewPage({ params }: Props) {
   const [transcriptExplanation, setTranscriptExplanation] = useState("");
   const editorViewRef = useRef<EditorView | null>(null);
   const [existingAnswer, setExistingAnswer] = useState<any>(null);
+  const [isInterviewEnded, setIsInterviewEnded] = useState(false);
+  const [interviewDuration, setInterviewDuration] = useState<number>(30);
 
   const { user } = useUser();
 
@@ -176,6 +170,15 @@ export default function CodingInterviewPage({ params }: Props) {
           ) {
             setInterviewData(interviewData);
             setCodingInterviewQuestions(jsonCodingQuestions);
+
+            const timeLimitMatch = interviewData.timeLimit.match(/(\d+)/);
+            if (timeLimitMatch) {
+              const minutes = Number.parseInt(timeLimitMatch[1], 10);
+              setInterviewDuration(minutes); // Convert minutes to seconds
+            } else {
+              console.error("Invalid time limit format");
+              setError("Invalid time limit format");
+            }
           } else {
             setError("No valid questions found in the interview data");
           }
@@ -343,6 +346,12 @@ export default function CodingInterviewPage({ params }: Props) {
     setExplanation(transcript); // Update the explanation state with the transcript
   }, []);
 
+  const handleInterviewEnd = useCallback(() => {
+    setIsInterviewEnded(true);
+    setInterviewDuration;
+    // You can add any other logic here, such as submitting all answers
+  }, []);
+
   if (isLoading) {
     return <div className="text-center p-8">Loading interview data...</div>;
   }
@@ -361,6 +370,12 @@ export default function CodingInterviewPage({ params }: Props) {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       <div className="w-2/5 p-6 bg-white shadow-lg overflow-y-auto border-r border-gray-200">
+        <div className="mt-4">
+          <InterviewTimer
+            duration={interviewDuration}
+            onTimeUp={handleInterviewEnd}
+          />
+        </div>
         <CodingQuestion
           question={codingInterviewQuestions[activeQuestionIndex]}
         />
@@ -558,26 +573,42 @@ export default function CodingInterviewPage({ params }: Props) {
           <p className="text-sm">{explanation}</p>
         </div>
       )}
+      {isInterviewEnded && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl">
+            <h2 className="text-2xl font-bold mb-4">Interview Ended</h2>
+            <p>
+              The interview time has expired. Your answers have been submitted.
+            </p>
+            <Link
+              href={`/dashboard/codingInterview/${interviewData.interviewId}/coding-feedback`}
+            >
+              <Button className="mt-4" variant="default">
+                View Feedback
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 function getInitialCode(language: "java" | "cpp") {
   if (language === "java") {
-    return `public class Solution {
-    public int solve(String[] input) {
-        // Implement your solution here
-        return 0;
+    return `public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
     }
 }`;
   } else if (language === "cpp") {
-    return `class Solution {
-public:
-    int solve(vector<string>& input) {
-        // Implement your solution here
-        return 0;
-    }
-}`;
+    return `#include <iostream>
+
+int main() {
+    std::cout << "Hello, World!" << std::endl;
+    return 0;
+}
+`;
   }
   return "";
 }
