@@ -55,8 +55,8 @@ type Props = {
   };
 };
 
-export default async function CodingInterviewPage({ params }: Props) {
-  const interviewId = await params.InterviewId;
+export default function CodingInterviewPage({ params }: Props) {
+  const interviewId = params.InterviewId;
 
   // State management
   const [language, setLanguage] = useState<"java" | "cpp">("java");
