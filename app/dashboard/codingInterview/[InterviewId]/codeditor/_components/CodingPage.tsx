@@ -49,11 +49,11 @@ interface FeedbackResponse {
     bestPractices: string;
   };
 }
-type Props = {
+interface Props {
   params: {
     InterviewId: string;
   };
-};
+}
 
 export default function CodingInterviewPage({ params }: Props) {
   const interviewId = params.InterviewId;

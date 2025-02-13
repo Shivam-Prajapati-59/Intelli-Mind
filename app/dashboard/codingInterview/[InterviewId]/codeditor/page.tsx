@@ -1,9 +1,15 @@
+// app/dashboard/codingInterview/[InterviewId]/page.tsx
 import React from "react";
 import CodingInterviewPage from "./_components/CodingPage";
-import { PageProps } from "@/.next/types/app/page";
+
+interface PageProps {
+  params: Promise<{
+    InterviewId: string;
+  }>;
+}
 
 export default async function InterviewPage({ params }: PageProps) {
-  const resolvedParams = await params; // Await params as it's a Promise
+  const resolvedParams = await params;
 
   return (
     <div className="w-full h-full">
