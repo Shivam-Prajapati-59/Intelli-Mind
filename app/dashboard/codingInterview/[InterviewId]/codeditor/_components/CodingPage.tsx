@@ -50,11 +50,11 @@ interface FeedbackResponse {
   };
 }
 type Props = {
-  params: string;
+  params: { interviewId: string }; // Ensure it's a resolved object
 };
 
 export default function CodingInterviewPage({ params }: Props) {
-  const interviewId = params;
+  const { interviewId } = params;
 
   // State management
   const [language, setLanguage] = useState<"java" | "cpp">("java");
@@ -370,6 +370,12 @@ export default function CodingInterviewPage({ params }: Props) {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       <div className="w-2/5 p-6 bg-white shadow-lg overflow-y-auto border-r border-gray-200">
+        <div>
+          <InterviewTimer
+            duration={interviewDuration}
+            onTimeUp={handleInterviewEnd}
+          />
+        </div>
         <CodingQuestion
           question={codingInterviewQuestions[activeQuestionIndex]}
         />

@@ -1,14 +1,20 @@
 import React from "react";
 import CodingInterviewPage from "./_components/CodingPage";
 
-type Params = {
-  slug: string;
+type Props = {
+  params: Promise<{ InterviewId: string }>; // Notice the uppercase "I"
 };
 
-export default async function InterviewPage({ params }: { params: Params }) {
+export default async function InterviewPage({ params }: Props) {
+  const resolvedParams = await params; // Await the params
+
+  console.log("Resolved Params:", resolvedParams); // Debugging
+
   return (
     <div className="w-full h-full">
-      <CodingInterviewPage params={params.slug} />
+      <CodingInterviewPage
+        params={{ interviewId: resolvedParams.InterviewId }}
+      />
     </div>
   );
 }
