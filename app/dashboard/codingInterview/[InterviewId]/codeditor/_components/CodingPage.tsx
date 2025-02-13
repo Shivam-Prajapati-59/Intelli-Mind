@@ -38,9 +38,6 @@ type CodingInterviewQuestion = {
   hints?: string[];
 };
 
-type Props = {
-  params: { interviewId: string };
-};
 interface FeedbackResponse {
   rating: number;
   technicalAccuracy: number;
@@ -52,9 +49,14 @@ interface FeedbackResponse {
     bestPractices: string;
   };
 }
+type Props = {
+  params: {
+    InterviewId: string;
+  };
+};
 
-export default function CodingInterviewPage({ params }: Props) {
-  const { interviewId } = params;
+export default async function CodingInterviewPage({ params }: Props) {
+  const interviewId = await params.InterviewId;
 
   // State management
   const [language, setLanguage] = useState<"java" | "cpp">("java");
