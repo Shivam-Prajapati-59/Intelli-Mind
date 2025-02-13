@@ -106,11 +106,12 @@ const AddNewCodingInterview = () => {
 
       const generatedQuestions = await response.json();
       const cleanJsonQuestion = generatedQuestions
-        .replace(/```json\n?/g, "")
-        .replace(/```/g, "")
+        .replace(/```json\s*/i, "")
+        .replace(/```\s*$/, "")
         .trim();
 
       const cleanJsonOutput = JSON.parse(cleanJsonQuestion);
+      console.log("cleanJsonOutput", cleanJsonOutput);
 
       // Insert the interview data into the database
       const result = await db

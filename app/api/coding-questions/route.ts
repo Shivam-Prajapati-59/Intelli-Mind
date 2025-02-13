@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
     console.log("AI Result:", result);
 
     const responseText = await result.response.text();
-    console.log("AI Response:", responseText);
+    // console.log("AI Response:", responseText);
 
     return NextResponse.json(responseText);
   } catch (error) {
