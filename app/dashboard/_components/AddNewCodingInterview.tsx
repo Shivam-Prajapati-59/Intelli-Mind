@@ -111,9 +111,6 @@ const AddNewCodingInterview = () => {
         .trim();
 
       const cleanJsonOutput = JSON.parse(cleanJsonQuestion);
-      console.log("cleanJsonOutput", cleanJsonOutput);
-
-      // Insert the interview data into the database
       const result = await db
         .insert(CodingInterview)
         .values({
@@ -254,11 +251,8 @@ const AddNewCodingInterview = () => {
                   <SelectValue placeholder="Select language" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="javascript">JavaScript</SelectItem>
-                  <SelectItem value="python">Python</SelectItem>
                   <SelectItem value="java">Java</SelectItem>
                   <SelectItem value="cpp">C++</SelectItem>
-                  <SelectItem value="csharp">C#</SelectItem>
                 </SelectContent>
               </Select>
             </div>
