@@ -7,36 +7,8 @@ import {
   SafetySetting,
 } from "@google/generative-ai";
 
-// Type definitions for better type safety
-interface QuestionExample {
-  input: string;
-  output: string;
-  explanation: string;
-}
+export const runtime = "edge";
 
-interface QuestionSolution {
-  cpp: string;
-  java: string;
-}
-
-interface CodingQuestion {
-  title: string;
-  description: string;
-  examples: QuestionExample[];
-  constraints: string[];
-  solution: QuestionSolution;
-  explanation: string;
-}
-
-interface ApiResponse {
-  questions: CodingQuestion[];
-  metadata: {
-    topic: string;
-    generatedAt: string;
-  };
-}
-
-// Configuration
 const GENERATION_CONFIG: GenerationConfig = {
   temperature: 0.7,
   topP: 0.9,
@@ -55,7 +27,6 @@ const SAFETY_SETTINGS: SafetySetting[] = [
   },
 ];
 
-// Initialize Gemini API
 const initializeGeminiApi = () => {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -76,7 +47,7 @@ const generatePrompt = (topic: string): string => {
     3. Examples (input, output, and explanation)
     4. difficulty level
     5. Constraints
-    6.  hints
+    6. hints
     7. Solution in C++ and Java
     8. Explanation of the solution
 
@@ -98,8 +69,8 @@ const generatePrompt = (topic: string): string => {
           "Constraint 2"
         ],
         "hints": [
-        "Hint 1",
-        "Hint 2"
+          "Hint 1",
+          "Hint 2"
         ],
         "solution": {
           "cpp": "C++ code here",
@@ -108,14 +79,11 @@ const generatePrompt = (topic: string): string => {
         "explanation": "Explanation of the solution"
       }
     ]
-
-    Ensure that the generated questions are unique, challenging, and relevant to the given topic.
   `.trim();
 };
 
 export async function POST(request: NextRequest) {
   try {
-    // Input validation
     const formData = await request.formData();
     const topic = formData.get("topic");
 
@@ -126,21 +94,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize model
     const model = initializeGeminiApi();
     const chatSession = model.startChat({
       generationConfig: GENERATION_CONFIG,
       safetySettings: SAFETY_SETTINGS,
     });
 
-    // Generate questions
     const result = await chatSession.sendMessage(generatePrompt(topic.trim()));
-    console.log("AI Result:", result);
-
     const responseText = await result.response.text();
-    console.log("AI Response:", responseText);
 
-    return NextResponse.json(responseText);
+    return new NextResponse(responseText, {
+      headers: {
+        "Content-Type": "application/json",
+        Connection: "keep-alive",
+        "Keep-Alive": "timeout=60",
+      },
+    });
   } catch (error) {
     console.error("Error processing request:", error);
     return NextResponse.json(
@@ -151,27 +120,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-export async function GET() {
-  return NextResponse.json({
-    message: "Coding Questions Generator API",
-    version: "1.0",
-    endpoints: {
-      POST: {
-        description: "Generate custom coding questions",
-        requiredParams: {
-          topic:
-            "string (required) - The programming topic to generate questions for",
-        },
-        responseFormat: {
-          questions: "Array of coding questions with detailed structure",
-          metadata: {
-            topic: "string - The requested topic",
-            generatedAt: "ISO timestamp",
-          },
-        },
-      },
-    },
-  });
 }

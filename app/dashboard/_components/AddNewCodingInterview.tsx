@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { db } from "@/utils/db";
 import { CodingInterview } from "@/utils/schema";
 import { v4 as uuidv4 } from "uuid";
@@ -44,10 +44,13 @@ const INITIAL_FORM_STATE: FormData = {
   programmingLanguage: "",
 };
 
+const TIME_LIMIT = 60000; // 60 seconds
+
 const AddNewCodingInterview: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_STATE);
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const { user } = useUser();
   const router = useRouter();
 
@@ -68,7 +71,7 @@ const AddNewCodingInterview: React.FC = () => {
     }));
   };
 
-  const validateForm = (): boolean => {
+  const validateForm = useCallback((): boolean => {
     return (
       formData.interviewTopic.trim() !== "" &&
       formData.difficultyLevel !== "" &&
@@ -77,7 +80,7 @@ const AddNewCodingInterview: React.FC = () => {
       formData.timeLimit <= 180 &&
       formData.programmingLanguage !== ""
     );
-  };
+  }, [formData]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,10 +91,10 @@ const AddNewCodingInterview: React.FC = () => {
     }
 
     setIsLoading(true);
+    setProgress(0);
 
-    // Create an AbortController to handle timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 100000); // 30 seconds
+    const timeoutId = setTimeout(() => controller.abort(), TIME_LIMIT);
 
     try {
       const formDataApi = new FormData();
@@ -100,25 +103,45 @@ const AddNewCodingInterview: React.FC = () => {
       const response = await fetch("/api/coding-questions", {
         method: "POST",
         body: formDataApi,
-        signal: controller.signal, // Attach the signal to the request
+        signal: controller.signal,
+        cache: "no-store",
+        headers: {
+          Connection: "keep-alive",
+        },
       });
 
-      clearTimeout(timeoutId); // Clear timeout if request completes in time
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error("Failed to generate questions");
+        throw new Error(`Failed to generate questions: ${response.statusText}`);
       }
 
-      const generatedQuestions = await response.json();
-      const cleanJsonQuestion = generatedQuestions
+      // Handle streaming response
+      const reader = response.body?.getReader();
+      let result = "";
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          result += new TextDecoder().decode(value);
+          // Update progress
+          setProgress((prev) => Math.min(prev + 20, 90));
+        }
+      }
+
+      // Parse and clean the response
+      const cleanJsonQuestion = result
         .replace(/```json\s*/i, "")
         .replace(/```\s*$/, "")
         .trim();
 
       const cleanJsonOutput = JSON.parse(cleanJsonQuestion);
-      console.log("cleanJsonOutput", cleanJsonOutput);
 
-      const result = await db
+      setProgress(95);
+
+      // Save to database
+      const dbResult = await db
         .insert(CodingInterview)
         .values({
           interviewId: uuidv4(),
@@ -133,21 +156,23 @@ const AddNewCodingInterview: React.FC = () => {
         })
         .returning({ insertedId: CodingInterview.interviewId });
 
+      setProgress(100);
       setOpenDialog(false);
       setFormData(INITIAL_FORM_STATE);
-      router.push(`/dashboard/codingInterview/${result[0].insertedId}`);
+      router.push(`/dashboard/codingInterview/${dbResult[0].insertedId}`);
     } catch (error: any) {
       console.error("Error submitting form:", error);
 
       if (error.name === "AbortError") {
-        alert("Request timed out. Please try again.");
-      } else {
         alert(
-          "An error occurred while creating the interview. Please try again."
+          "Request timed out. The operation took longer than expected. Please try again."
         );
+      } else {
+        alert(`An error occurred: ${error.message}`);
       }
     } finally {
       setIsLoading(false);
+      setProgress(0);
     }
   };
 
@@ -182,9 +207,10 @@ const AddNewCodingInterview: React.FC = () => {
                 name="interviewTopic"
                 value={formData.interviewTopic}
                 onChange={handleInputChange}
-                placeholder="e.g. Stack , Queue, Linked List, etc."
+                placeholder="e.g. Stack, Queue, Linked List, etc."
                 className="w-full"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -197,7 +223,7 @@ const AddNewCodingInterview: React.FC = () => {
                   handleSelectChange("difficultyLevel", value)
                 }
                 value={formData.difficultyLevel}
-                required
+                disabled={isLoading}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select difficulty" />
@@ -225,6 +251,7 @@ const AddNewCodingInterview: React.FC = () => {
                 placeholder="Describe the coding problem or challenge..."
                 className="h-24 resize-none"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -242,6 +269,7 @@ const AddNewCodingInterview: React.FC = () => {
                 onChange={handleInputChange}
                 className="w-full"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -257,7 +285,7 @@ const AddNewCodingInterview: React.FC = () => {
                   handleSelectChange("programmingLanguage", value)
                 }
                 value={formData.programmingLanguage}
-                required
+                disabled={isLoading}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select language" />
@@ -268,6 +296,15 @@ const AddNewCodingInterview: React.FC = () => {
                 </SelectContent>
               </Select>
             </div>
+
+            {isLoading && progress > 0 && (
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div
+                  className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
+            )}
           </div>
 
           <DialogFooter className="gap-2">
@@ -283,7 +320,14 @@ const AddNewCodingInterview: React.FC = () => {
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Processing..." : "Create Coding Interview"}
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Processing...
+                </div>
+              ) : (
+                "Create Coding Interview"
+              )}
             </Button>
           </DialogFooter>
         </form>

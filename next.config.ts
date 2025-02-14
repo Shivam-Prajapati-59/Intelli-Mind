@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverActions: {
-    timeout: 20000, // 20 seconds
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
   },
   async headers() {
     return [
@@ -9,8 +11,12 @@ const nextConfig = {
         source: "/api/:path*",
         headers: [
           {
-            key: "Cache-Control",
-            value: "no-store, max-age=0",
+            key: "Connection",
+            value: "keep-alive",
+          },
+          {
+            key: "Keep-Alive",
+            value: "timeout=60",
           },
         ],
       },
