@@ -89,6 +89,10 @@ const AddNewCodingInterview: React.FC = () => {
 
     setIsLoading(true);
 
+    // Create an AbortController to handle timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 40000); // 30 seconds
+
     try {
       const formDataApi = new FormData();
       formDataApi.append("topic", formData.interviewTopic);
@@ -96,7 +100,10 @@ const AddNewCodingInterview: React.FC = () => {
       const response = await fetch("/api/coding-questions", {
         method: "POST",
         body: formDataApi,
+        signal: controller.signal, // Attach the signal to the request
       });
+
+      clearTimeout(timeoutId); // Clear timeout if request completes in time
 
       if (!response.ok) {
         throw new Error("Failed to generate questions");
@@ -129,11 +136,16 @@ const AddNewCodingInterview: React.FC = () => {
       setOpenDialog(false);
       setFormData(INITIAL_FORM_STATE);
       router.push(`/dashboard/codingInterview/${result[0].insertedId}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting form:", error);
-      alert(
-        "An error occurred while creating the interview. Please try again."
-      );
+
+      if (error.name === "AbortError") {
+        alert("Request timed out. Please try again.");
+      } else {
+        alert(
+          "An error occurred while creating the interview. Please try again."
+        );
+      }
     } finally {
       setIsLoading(false);
     }

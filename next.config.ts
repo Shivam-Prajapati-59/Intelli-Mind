@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   serverActions: {
-    timeout: 20000, // 20 seconds
+    timeout: 40000, // 20 seconds
   },
   async headers() {
     return [
