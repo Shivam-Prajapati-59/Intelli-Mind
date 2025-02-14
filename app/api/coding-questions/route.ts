@@ -135,10 +135,10 @@ export async function POST(request: NextRequest) {
 
     // Generate questions
     const result = await chatSession.sendMessage(generatePrompt(topic.trim()));
-    // console.log("AI Result:", result);
+    console.log("AI Result:", result);
 
     const responseText = await result.response.text();
-    // console.log("AI Response:", responseText);
+    console.log("AI Response:", responseText);
 
     return NextResponse.json(responseText);
   } catch (error) {

@@ -27,7 +27,6 @@ import { CodingInterview } from "@/utils/schema";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-// import moment from "moment"; // Removed moment import
 
 interface FormData {
   interviewTopic: string;
@@ -45,7 +44,7 @@ const INITIAL_FORM_STATE: FormData = {
   programmingLanguage: "",
 };
 
-const AddNewCodingInterview = () => {
+const AddNewCodingInterview: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_STATE);
   const [isLoading, setIsLoading] = useState(false);
@@ -91,7 +90,6 @@ const AddNewCodingInterview = () => {
     setIsLoading(true);
 
     try {
-      // Call the generate-questions API
       const formDataApi = new FormData();
       formDataApi.append("topic", formData.interviewTopic);
 
@@ -111,11 +109,13 @@ const AddNewCodingInterview = () => {
         .trim();
 
       const cleanJsonOutput = JSON.parse(cleanJsonQuestion);
+      console.log("cleanJsonOutput", cleanJsonOutput);
+
       const result = await db
         .insert(CodingInterview)
         .values({
           interviewId: uuidv4(),
-          jsonCodeResp: JSON.stringify(cleanJsonOutput), // Store the generated questions
+          jsonCodeResp: JSON.stringify(cleanJsonOutput),
           interviewTopic: formData.interviewTopic.trim(),
           difficultyLevel: formData.difficultyLevel,
           problemDescription: formData.problemDescription.trim(),
