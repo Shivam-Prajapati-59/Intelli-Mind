@@ -91,7 +91,7 @@ const AddNewCodingInterview: React.FC = () => {
 
     // Create an AbortController to handle timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 40000); // 30 seconds
+    const timeoutId = setTimeout(() => controller.abort(), 100000); // 30 seconds
 
     try {
       const formDataApi = new FormData();
