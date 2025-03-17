@@ -13,7 +13,7 @@ if (!apiKey) {
 
 const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.0-pro", // Changed to a more stable model
+  model: "gemini-2.0-flash", // Changed to a more stable model
 });
 
 const generationConfig = {
