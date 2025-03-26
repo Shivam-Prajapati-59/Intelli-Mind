@@ -13,7 +13,7 @@ if (!apiKey) {
 
 const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.0-pro", // Changed to a more stable model
+  model: "gemini-2.0-flash", // Changed to a more stable model
 });
 
 const generationConfig = {
@@ -91,7 +91,8 @@ Do not include any additional text or formatting outside of the JSON structure.
     let parsedFeedback;
     try {
       // Try to parse the response as JSON
-      parsedFeedback = JSON.parse(responseText);
+      const filtered = responseText.replace("```json", "").replace("```", "");
+      parsedFeedback = JSON.parse(filtered);
 
       // Validate the parsed feedback structure
       if (!parsedFeedback || typeof parsedFeedback !== "object") {
@@ -115,7 +116,7 @@ Do not include any additional text or formatting outside of the JSON structure.
         throw new Error("Invalid feedback text");
       }
 
-      console.log("Successfully parsed feedback:", parsedFeedback);
+      // console.log("Successfully parsed feedback:", parsedFeedback);
     } catch (parseError) {
       console.error("JSON Parsing Error:", parseError);
       console.error("Raw response that failed parsing:", responseText);
