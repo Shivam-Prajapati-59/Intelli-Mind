@@ -12,7 +12,7 @@ if (!apiKey) {
 
 const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash",
+  model: "gemini-1.5-pro",
 });
 
 const generationConfig = {
@@ -183,7 +183,8 @@ Ensure that bestPractices is provided as an array of strings.
     let parsedFeedback;
     try {
       // Parse the JSON response
-      parsedFeedback = JSON.parse(responseText);
+      const filtered = responseText.replace("```json", "").replace("```", "");
+      parsedFeedback = JSON.parse(filtered);
 
       // Handle case where bestPractices is a string
       if (typeof parsedFeedback.feedback.bestPractices === "string") {
