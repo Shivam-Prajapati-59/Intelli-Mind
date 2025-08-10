@@ -52,6 +52,7 @@
     "pdfjs-dist": "^4.8.69",
     "prettier": "^3.4.2",
     "prettier-plugin-java": "^2.6.7",
+    "process": "^0.11.10",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-error-boundary": "^5.0.0",
