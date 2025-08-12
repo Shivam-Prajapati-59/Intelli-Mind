@@ -1,4 +1,4 @@
-# 🎯 MockMind - AI-Powered Interview Platform
+# 🎯 Intelli Mind - AI-Powered Interview Platform
 
 <div align="center">
 
