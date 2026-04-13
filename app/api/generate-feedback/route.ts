@@ -13,7 +13,7 @@ if (!apiKey) {
 
 const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash", // Changed to a more stable model
+  model: "gemini-3-flash-preview", // Changed to a more stable model
 });
 
 const generationConfig = {
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       console.log("Validation failed: Empty question or answer");
       return NextResponse.json(
         { error: "Question and answer are required and cannot be empty" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -84,7 +84,7 @@ Do not include any additional text or formatting outside of the JSON structure.
       console.log("Error: Empty response from Gemini");
       return NextResponse.json(
         { error: "Failed to generate feedback: Empty response" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -137,7 +137,7 @@ Do not include any additional text or formatting outside of the JSON structure.
             error: true,
           },
         },
-        { status: 200 }
+        { status: 200 },
       ); // Return 200 with fallback feedback instead of 500
     }
 
@@ -154,7 +154,7 @@ Do not include any additional text or formatting outside of the JSON structure.
         error: "Failed to generate feedback",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

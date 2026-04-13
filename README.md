@@ -78,7 +78,7 @@ The platform leverages Google Gemini AI to create personalized interview experie
 - **ORM**: Drizzle ORM
 - **Authentication**: Clerk
 - **AI Integration**: Google Gemini AI
-- **Code Execution**: Piston API
+- **Code Execution**: Judge0 API
 
 ### Development Tools
 
@@ -96,7 +96,7 @@ graph TB
     A[Client Layer - Next.js] --> B[Middleware - Clerk Auth]
     B --> C[API Layer - Next.js Routes]
     C --> D[AI Services - Gemini]
-    C --> E[External APIs - Piston]
+    C --> E[External APIs - Judge0]
     C --> F[Database - PostgreSQL]
 
     subgraph "Client Features"
@@ -219,7 +219,9 @@ CLERK_SECRET_KEY=sk_test_...
 GEMINI_API_KEY=AIza...
 
 # External APIs
-PISTON_API_URL=https://emkc.org/api/v2/piston/execute
+JUDGE0_API_URL=https://ce.judge0.com
+# Optional if your Judge0 provider requires auth
+# JUDGE0_AUTH_TOKEN=your-token
 ```
 
 ### Environment Variables Description
@@ -230,7 +232,8 @@ PISTON_API_URL=https://emkc.org/api/v2/piston/execute
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk public key for client-side auth | ✅       |
 | `CLERK_SECRET_KEY`                  | Clerk secret key for server-side auth | ✅       |
 | `GEMINI_API_KEY`                    | Google AI API key for Gemini models   | ✅       |
-| `PISTON_API_URL`                    | Code execution service endpoint       | ✅       |
+| `JUDGE0_API_URL`                    | Judge0 base URL                       | ✅       |
+| `JUDGE0_AUTH_TOKEN`                 | Optional Judge0 auth token            | ❌       |
 
 ## 📊 Database Schema
 
@@ -492,10 +495,10 @@ const fetchExistingAnswer = async () => {
         eq(UserCodeAnswer.interviewIdRef, interviewId),
         eq(
           UserCodeAnswer.question,
-          JSON.stringify(codingInterviewQuestions[activeQuestionIndex])
+          JSON.stringify(codingInterviewQuestions[activeQuestionIndex]),
         ),
-        eq(UserCodeAnswer.userEmail, user.primaryEmailAddress.emailAddress)
-      )
+        eq(UserCodeAnswer.userEmail, user.primaryEmailAddress.emailAddress),
+      ),
     );
 };
 ```
@@ -539,10 +542,10 @@ const saveUserAnswer = async () => {
         eq(UserAnswer.mockIdRef, interviewData.mockId),
         eq(
           UserAnswer.question,
-          mockInterviewQuestions[activeQuestionIndex].Question
+          mockInterviewQuestions[activeQuestionIndex].Question,
         ),
-        eq(UserAnswer.userEmail, user.primaryEmailAddress.emailAddress)
-      )
+        eq(UserAnswer.userEmail, user.primaryEmailAddress.emailAddress),
+      ),
     );
 
   if (existingAnswers.length > 0) {
@@ -877,7 +880,7 @@ export async function sendInterviewRequest(formData: {
   });
 
   const result = await chatSession.sendMessage(
-    "Generate 5 comprehensive interview questions"
+    "Generate 5 comprehensive interview questions",
   );
   return result.response.text();
 }
@@ -890,7 +893,7 @@ export async function sendInterviewRequest(formData: {
 const generateCodeFeedback = async (
   question: string,
   code: string,
-  explanation?: string
+  explanation?: string,
 ) => {
   const prompt = `
     You are an expert coding interviewer. Analyze this solution:
@@ -965,7 +968,7 @@ const handleQuestionChange = useCallback(
     setOutput("");
     setFeedback(null);
   },
-  [language]
+  [language],
 );
 ```
 
@@ -1008,7 +1011,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -1120,7 +1123,7 @@ export async function POST(request: Request) {
   } else {
     return NextResponse.json(
       { error: "Unsupported language" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -1148,14 +1151,14 @@ export async function POST(request: Request) {
     } else {
       return NextResponse.json(
         { error: "Compilation or execution failed" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   } catch (error) {
     console.error("Error compiling and running code:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -1173,7 +1176,7 @@ export async function POST(request: NextRequest) {
     if (!question?.trim() || !answer?.trim()) {
       return NextResponse.json(
         { error: "Question and answer are required and cannot be empty" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -1270,7 +1273,7 @@ export async function POST(request: NextRequest) {
         error: "Failed to generate feedback",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -1524,7 +1527,7 @@ if (error) {
 const apiCall = async (
   url: string,
   options: RequestInit,
-  retries = 3
+  retries = 3,
 ): Promise<any> => {
   for (let i = 0; i < retries; i++) {
     try {

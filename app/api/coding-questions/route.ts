@@ -34,7 +34,7 @@ const initializeGeminiApi = () => {
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  return genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  return genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 };
 
 const generatePrompt = (topic: string): string => {
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     if (!topic || typeof topic !== "string" || topic.trim().length === 0) {
       return NextResponse.json(
         { error: "Topic is required and must be a non-empty string" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
         error: "Failed to generate coding questions",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

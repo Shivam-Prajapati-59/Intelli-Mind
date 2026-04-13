@@ -13,7 +13,7 @@ if (!apiKey) {
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash",
+  model: "gemini-3-flash-preview",
 });
 
 const generationConfig = {
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     if (!jobPosition || !jobDescription) {
       return NextResponse.json(
         { error: "Job position and description are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -81,7 +81,7 @@ Requirements:
     console.error("Error processing request:", error);
     return NextResponse.json(
       { error: "Failed to generate interview questions" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
